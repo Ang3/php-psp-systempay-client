@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of package ang3/php-psp-systempay
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace Ang3\Component\PSP\Systempay\Enum;
+
+enum HashAlgorithm: string
+{
+    case Sha256Hmac = 'sha256_hmac';
+}
