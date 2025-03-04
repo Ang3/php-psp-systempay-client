@@ -26,9 +26,19 @@ class Payload
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
+    public function __toString(): string
+    {
+        return $this->getObjectType();
+    }
+
     public function __get(string $name): mixed
     {
         return $this->getValue($name);
+    }
+
+    public function getObjectType(): string
+    {
+        return (string) $this->getString('_type');
     }
 
     /**
