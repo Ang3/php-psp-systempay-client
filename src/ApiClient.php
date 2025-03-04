@@ -12,9 +12,6 @@ declare(strict_types=1);
 namespace Ang3\Component\PSP\Systempay;
 
 use Ang3\Component\PSP\Systempay\Enum\ApiEndpoint;
-use Ang3\Component\PSP\Systempay\Response\ApiResponse;
-use Ang3\Component\PSP\Systempay\Response\ApiResponseInterface;
-use Ang3\Component\PSP\Systempay\Response\ErrorResponse;
 use Ang3\Component\PSP\Systempay\Utils\Payload;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
@@ -64,7 +61,7 @@ class ApiClient
      * @param array<string, mixed>  $payload
      * @param array<string, scalar> $headers
      *
-     * @return ApiResponseInterface The API response
+     * @return ApiResponse The API response
      *
      * @throws DecodingExceptionInterface    When the body cannot be decoded to an array
      * @throws TransportExceptionInterface   When a network error occurs
@@ -73,7 +70,7 @@ class ApiClient
      * @throws ServerExceptionInterface      On a 5xx when $throw is true
      * @throws \RuntimeException             On invalid API response
      */
-    public function request(ApiEndpoint|string $endpoint, array $payload, array $headers = []): ApiResponseInterface
+    public function request(ApiEndpoint|string $endpoint, array $payload, array $headers = []): ApiResponse
     {
         $requestId = uniqid();
         $endpoint = $endpoint instanceof ApiEndpoint ? $endpoint->value : $endpoint;
@@ -91,9 +88,7 @@ class ApiClient
         $payload = new Payload($response->toArray());
 
         try {
-            $apiResponse = new ApiResponse($payload);
-
-            return $apiResponse->isSuccessful() ? $apiResponse : new ErrorResponse($payload);
+            return new ApiResponse($payload);
         } catch (\Throwable $exception) {
             throw new \RuntimeException('Invalid response payload.', 0, $exception);
         }

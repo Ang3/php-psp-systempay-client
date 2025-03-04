@@ -9,18 +9,19 @@ declare(strict_types=1);
  * with this source code in the file LICENSE.
  */
 
-namespace Ang3\Component\PSP\Systempay\Response;
+namespace Ang3\Component\PSP\Systempay;
 
 use Ang3\Component\PSP\Systempay\Enum\ApiResponseStatus;
 use Ang3\Component\PSP\Systempay\Enum\Mode;
 use Ang3\Component\PSP\Systempay\Utils\Payload;
 
-abstract class AbstractApiResponse implements ApiResponseInterface
+class ApiResponse
 {
     private string $webService;
     private string $version;
     private string $applicationVersion;
     private ApiResponseStatus $status;
+    private Payload $answer;
     private \DateTimeInterface $serverDate;
     private string $applicationProvider;
     private ?Mode $mode;
@@ -34,6 +35,7 @@ abstract class AbstractApiResponse implements ApiResponseInterface
         $this->version = (string) $payload->getString('version');
         $this->applicationVersion = (string) $payload->getString('applicationVersion');
         $this->status = ApiResponseStatus::from((string) $payload->getString('status'));
+        $this->answer = $payload->getPayload('answer');
         $this->serverDate = $payload->getDate('serverDate') ?: throw new \InvalidArgumentException('Missing server date property.');
         $this->applicationProvider = (string) $payload->getString('applicationProvider');
         $this->mode = Mode::tryFrom((string) $payload->getString('mode'));
@@ -57,6 +59,11 @@ abstract class AbstractApiResponse implements ApiResponseInterface
     public function getStatus(): ApiResponseStatus
     {
         return $this->status;
+    }
+
+    public function getAnswer(): Payload
+    {
+        return $this->answer;
     }
 
     public function getServerDate(): \DateTimeInterface
