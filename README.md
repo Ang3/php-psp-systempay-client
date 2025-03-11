@@ -7,7 +7,7 @@ PHP Systempay PSP Client
 [![Latest Unstable Version](https://poser.pugx.org/ang3/php-psp-systempay-client/v/unstable)](https://packagist.org/packages/ang3/php-psp-systempay-client) 
 [![Total Downloads](https://poser.pugx.org/ang3/php-psp-systempay-client/downloads)](https://packagist.org/packages/ang3/php-psp-systempay-client)
 
-PHP library for Systempay PSP.
+PHP HTTP client for Systempay PSP.
 
 Installation
 ------------
