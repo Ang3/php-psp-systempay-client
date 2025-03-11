@@ -1,8 +1,8 @@
 {
-    "name": "ang3/php-psp-systempay",
-    "type": "component",
-    "description": "PHP Systempay PSP library",
-    "keywords": ["php", "psp", "systempay"],
+    "name": "ang3/php-psp-systempay-client",
+    "type": "library",
+    "description": "PHP Systempay PSP client",
+    "keywords": ["php", "psp", "systempay", "client"],
     "license": "MIT",
     "authors": [
         {
