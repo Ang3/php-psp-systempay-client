@@ -24,7 +24,7 @@ class ApiResponse
     private Payload $answer;
     private \DateTimeInterface $serverDate;
     private string $applicationProvider;
-    private ?Mode $mode;
+    private ?Mode $mode = null;
 
     /**
      * @throws \Exception on invalid payload

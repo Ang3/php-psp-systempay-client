@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Ang3\Component\PSP\Systempay;
 
 use Ang3\Component\PSP\Systempay\Enum\ApiEndpoint;
+use Ang3\Component\PSP\Systempay\Exception\InvalidResponseException;
 use Ang3\Component\PSP\Systempay\Utils\Payload;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
@@ -68,7 +69,7 @@ class ApiClient
      * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
      * @throws ClientExceptionInterface      On a 4xx when $throw is true
      * @throws ServerExceptionInterface      On a 5xx when $throw is true
-     * @throws \RuntimeException             On invalid API response
+     * @throws InvalidResponseException      On invalid API response
      */
     public function request(ApiEndpoint|string $endpoint, array $payload, array $headers = []): ApiResponse
     {
@@ -90,7 +91,7 @@ class ApiClient
         try {
             return new ApiResponse($payload);
         } catch (\Throwable $exception) {
-            throw new \RuntimeException('Invalid response payload.', 0, $exception);
+            throw new InvalidResponseException('Invalid response payload.', 0, $exception);
         }
     }
 }
