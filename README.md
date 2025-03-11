@@ -88,12 +88,12 @@ try {
 
 The request method may throw several exceptions:
 
-- DecodingExceptionInterface: Thrown when the response cannot be decoded.
-- TransportExceptionInterface: For network-related errors.
-- RedirectionExceptionInterface: For 3xx HTTP responses (if the maximum redirects are reached).
-- ClientExceptionInterface: For 4xx HTTP responses.
-- ServerExceptionInterface: For 5xx HTTP responses.
-- RuntimeException: Thrown if the API response payload is invalid.
+- `Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface`: Thrown when the response cannot be decoded.
+- `Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface`: For network-related errors.
+- `Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface`: For 3xx HTTP responses (if the maximum redirects are reached).
+- `Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface`: For 4xx HTTP responses.
+- `Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface`: For 5xx HTTP responses.
+- `Ang3\Component\PSP\Systempay\Exception\InvalidResponseException`: Thrown if the API response payload is invalid.
 
 Ensure to catch these exceptions to handle errors gracefully.
 
