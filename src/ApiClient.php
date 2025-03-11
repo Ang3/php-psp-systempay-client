@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Ang3\Component\PSP\Systempay;
 
 use Ang3\Component\PSP\Systempay\Enum\ApiEndpoint;
+use Ang3\Component\PSP\Systempay\Exception\InvalidPayloadException;
 use Ang3\Component\PSP\Systempay\Exception\InvalidResponseException;
 use Ang3\Component\PSP\Systempay\Utils\Payload;
 use Psr\Log\LoggerInterface;
@@ -41,17 +42,18 @@ class ApiClient
     }
 
     /**
-     * Validates the provided payload using the configured payload validator.
+     * Validates the provided IPN payload from Systempay.
      *
-     * This method accepts a payload that can be either an instance of the Payload class or an array.
-     * It then uses the payloadValidator (a dependency of the class) along with the stored credentials
-     * to perform the validation. The validation process checks that the payload conforms to the expected
-     * format and contains all required data, ensuring it meets the system's defined validation rules.
+     * This method leverages the configured payload validator to verify that the provided IPN payload:
+     * - Conforms to Systempay’s expected structure.
+     * - Contains all necessary data.
+     * - Passes the integrity check through hash verification.
      *
-     * @param mixed[] $payload The payload to validate. This may be provided as a Payload object
-     *                         or as an associative array.
+     * @param mixed[] $payload an associative array representing the IPN payload data
      *
-     * @return bool returns true if the payload passes validation, or false if it does not
+     * @return bool returns true if the payload is valid
+     *
+     * @throws InvalidPayloadException if the payload is missing required fields or fails hash verification
      */
     public function validatePayload(array $payload): bool
     {
