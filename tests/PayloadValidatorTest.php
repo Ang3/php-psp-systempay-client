@@ -2,13 +2,25 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of package ang3/php-psp-systempay-client
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Ang3\Component\PSP\Systempay\Tests;
 
-use PHPUnit\Framework\TestCase;
-use Ang3\Component\PSP\Systempay\PayloadValidator;
 use Ang3\Component\PSP\Systempay\Credentials;
 use Ang3\Component\PSP\Systempay\Exception\InvalidPayloadException;
+use Ang3\Component\PSP\Systempay\PayloadValidator;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 final class PayloadValidatorTest extends TestCase
 {
     private Credentials $credentials;
@@ -32,12 +44,12 @@ final class PayloadValidatorTest extends TestCase
 
         $payload = [
             'kr-hash-algorithm' => 'sha256_hmac',
-            'kr-answer'         => $krAnswer,
-            'kr-hash-key'       => 'sha256_hmac',
-            'kr-hash'           => $expectedHash,
+            'kr-answer' => $krAnswer,
+            'kr-hash-key' => 'sha256_hmac',
+            'kr-hash' => $expectedHash,
         ];
 
-        $this->assertTrue($this->validator->validate($this->credentials, $payload));
+        self::assertTrue($this->validator->validate($this->credentials, $payload));
     }
 
     /**
@@ -51,12 +63,12 @@ final class PayloadValidatorTest extends TestCase
 
         $payload = [
             'kr-hash-algorithm' => 'sha256_hmac',
-            'kr-answer'         => $krAnswer,
-            'kr-hash-key'       => 'password',
-            'kr-hash'           => $expectedHash,
+            'kr-answer' => $krAnswer,
+            'kr-hash-key' => 'password',
+            'kr-hash' => $expectedHash,
         ];
 
-        $this->assertTrue($this->validator->validate($this->credentials, $payload));
+        self::assertTrue($this->validator->validate($this->credentials, $payload));
     }
 
     /**
@@ -67,9 +79,9 @@ final class PayloadValidatorTest extends TestCase
         $this->expectException(InvalidPayloadException::class);
         $payload = [
             'kr-hash-algorithm' => 'unsupported_algo',
-            'kr-answer'         => 'test/answer',
-            'kr-hash-key'       => 'sha256_hmac',
-            'kr-hash'           => 'dummy',
+            'kr-answer' => 'test/answer',
+            'kr-hash-key' => 'sha256_hmac',
+            'kr-hash' => 'dummy',
         ];
         $this->validator->validate($this->credentials, $payload);
     }
@@ -82,9 +94,9 @@ final class PayloadValidatorTest extends TestCase
         $this->expectException(InvalidPayloadException::class);
         $payload = [
             'kr-hash-algorithm' => 'sha256_hmac',
-            'kr-answer'         => 123, // Invalid type: integer instead of string
-            'kr-hash-key'       => 'sha256_hmac',
-            'kr-hash'           => 'dummy',
+            'kr-answer' => 123, // Invalid type: integer instead of string
+            'kr-hash-key' => 'sha256_hmac',
+            'kr-hash' => 'dummy',
         ];
         $this->validator->validate($this->credentials, $payload);
     }
@@ -97,9 +109,9 @@ final class PayloadValidatorTest extends TestCase
         $this->expectException(InvalidPayloadException::class);
         $payload = [
             'kr-hash-algorithm' => 'sha256_hmac',
-            'kr-answer'         => 'test/answer',
-            'kr-hash-key'       => 'sha256_hmac',
-            'kr-hash'           => 456, // Invalid type: integer instead of string
+            'kr-answer' => 'test/answer',
+            'kr-hash-key' => 'sha256_hmac',
+            'kr-hash' => 456, // Invalid type: integer instead of string
         ];
         $this->validator->validate($this->credentials, $payload);
     }
@@ -112,9 +124,9 @@ final class PayloadValidatorTest extends TestCase
         $this->expectException(InvalidPayloadException::class);
         $payload = [
             'kr-hash-algorithm' => 'sha256_hmac',
-            'kr-answer'         => 'test/answer',
-            'kr-hash-key'       => 'invalid_key',
-            'kr-hash'           => 'dummy',
+            'kr-answer' => 'test/answer',
+            'kr-hash-key' => 'invalid_key',
+            'kr-hash' => 'dummy',
         ];
         $this->validator->validate($this->credentials, $payload);
     }
@@ -130,9 +142,9 @@ final class PayloadValidatorTest extends TestCase
         $wrongHash = 'invalidhash';
         $payload = [
             'kr-hash-algorithm' => 'sha256_hmac',
-            'kr-answer'         => $krAnswer,
-            'kr-hash-key'       => 'sha256_hmac',
-            'kr-hash'           => $wrongHash,
+            'kr-answer' => $krAnswer,
+            'kr-hash-key' => 'sha256_hmac',
+            'kr-hash' => $wrongHash,
         ];
         $this->validator->validate($this->credentials, $payload);
     }
@@ -148,11 +160,11 @@ final class PayloadValidatorTest extends TestCase
 
         $payload = [
             'kr-hash-algorithm' => 'sha256_hmac',
-            'kr-answer'         => $krAnswerWithEscapes,
-            'kr-hash-key'       => 'sha256_hmac',
-            'kr-hash'           => $expectedHash,
+            'kr-answer' => $krAnswerWithEscapes,
+            'kr-hash-key' => 'sha256_hmac',
+            'kr-hash' => $expectedHash,
         ];
 
-        $this->assertTrue($this->validator->validate($this->credentials, $payload));
+        self::assertTrue($this->validator->validate($this->credentials, $payload));
     }
 }

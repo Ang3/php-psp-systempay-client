@@ -2,14 +2,26 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of package ang3/php-psp-systempay-client
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Ang3\Component\PSP\Systempay\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Ang3\Component\PSP\Systempay\ApiResponse;
-use Ang3\Component\PSP\Systempay\Utils\Payload;
 use Ang3\Component\PSP\Systempay\Enum\ApiResponseStatus;
 use Ang3\Component\PSP\Systempay\Enum\Mode;
+use Ang3\Component\PSP\Systempay\Utils\Payload;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 final class ApiResponseTest extends TestCase
 {
     /**
@@ -33,22 +45,22 @@ final class ApiResponseTest extends TestCase
         $response = new ApiResponse($payload);
 
         // Verify that the getters return the expected values.
-        $this->assertEquals('TestService', $response->getWebService());
-        $this->assertEquals('1.0', $response->getVersion());
-        $this->assertEquals('1.2.3', $response->getApplicationVersion());
-        $this->assertEquals(ApiResponseStatus::Success, $response->getStatus());
+        self::assertSame('TestService', $response->getWebService());
+        self::assertSame('1.0', $response->getVersion());
+        self::assertSame('1.2.3', $response->getApplicationVersion());
+        self::assertSame(ApiResponseStatus::Success, $response->getStatus());
 
         // Assuming getAnswer() returns a Payload object with a toArray() method.
-        $this->assertEquals($data['answer'], $response->getAnswer()->toArray());
+        self::assertSame($data['answer'], $response->getAnswer()->toArray());
 
         $expectedDate = new \DateTimeImmutable('2025-03-11T12:00:00+00:00');
-        $this->assertEquals($expectedDate, $response->getServerDate());
+        self::assertSame($expectedDate, $response->getServerDate());
 
-        $this->assertEquals('TestProvider', $response->getApplicationProvider());
-        $this->assertEquals(Mode::Test, $response->getMode());
-        $this->assertTrue($response->isTestMode());
-        $this->assertTrue($response->isSuccessful());
-        $this->assertFalse($response->isFailed());
+        self::assertSame('TestProvider', $response->getApplicationProvider());
+        self::assertSame(Mode::Test, $response->getMode());
+        self::assertTrue($response->isTestMode());
+        self::assertTrue($response->isSuccessful());
+        self::assertFalse($response->isFailed());
     }
 
     /**
@@ -70,10 +82,10 @@ final class ApiResponseTest extends TestCase
         $payload = new Payload($data);
         $response = new ApiResponse($payload);
 
-        $this->assertEquals(ApiResponseStatus::Error, $response->getStatus());
-        $this->assertFalse($response->isSuccessful());
-        $this->assertTrue($response->isFailed());
-        $this->assertFalse($response->isTestMode());
+        self::assertSame(ApiResponseStatus::Error, $response->getStatus());
+        self::assertFalse($response->isSuccessful());
+        self::assertTrue($response->isFailed());
+        self::assertFalse($response->isTestMode());
     }
 
     /**
