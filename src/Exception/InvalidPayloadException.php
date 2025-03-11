@@ -9,9 +9,11 @@ declare(strict_types=1);
  * with this source code in the file LICENSE.
  */
 
-namespace Ang3\Component\PSP\Systempay\Enum;
+namespace Ang3\Component\PSP\Systempay\Exception;
 
-enum HashAlgorithm: string
+/**
+ * This exception is thrown if the PSP payload is not valid.
+ */
+class InvalidPayloadException extends \RuntimeException
 {
-    case Sha256Hmac = 'sha256_hmac';
 }

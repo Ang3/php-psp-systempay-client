@@ -100,17 +100,29 @@ Ensure to catch these exceptions to handle errors gracefully.
 ### IPN Payload Validation
 
 Before processing an IPN (Instant Payment Notification) from Systempay, 
-you can validate the payload using the validatePayload method. 
-This method ensures that the payload conforms to Systempay’s expected structure and includes all necessary data. 
-It accepts an associative array (or a Payload object) and returns true if the payload is valid or false otherwise.
+you should validate the payload using the validatePayload method provided by the API client. 
+
+This method ensures that the payload conforms to Systempay’s expected structure, includes all necessary data, 
+and that its integrity is verified by checking the hash signature. 
+It accepts an associative array (or a Payload object) and returns true if the payload is valid; otherwise, 
+it throws an InvalidPayloadException detailing the issue.
 
 ```php
 $ipnPayload = [
-    // Your IPN payload data here
+    // Your IPN payload data here, for example:
+    'kr-hash-algorithm' => 'sha256_hmac',
+    'kr-answer'         => 'your_answer_data',
+    'kr-hash-key'       => 'password',
+    'kr-hash'           => 'calculated_hash_value',
 ];
 
-if (!$apiClient->validatePayload($ipnPayload)) {
-    throw new \InvalidArgumentException('Invalid IPN payload data');
+try {
+    if ($apiClient->validatePayload($ipnPayload)) {
+        // Process the valid IPN payload
+    }
+} catch (InvalidPayloadException $e) {
+    // Handle the invalid payload error
+    throw new \InvalidArgumentException('Invalid IPN payload data: ' . $e->getMessage());
 }
 ```
 
