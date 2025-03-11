@@ -53,8 +53,8 @@ final class ApiResponseTest extends TestCase
         // Assuming getAnswer() returns a Payload object with a toArray() method.
         self::assertSame($data['answer'], $response->getAnswer()->toArray());
 
-        $expectedDate = new \DateTimeImmutable('2025-03-11T12:00:00+00:00');
-        self::assertSame($expectedDate, $response->getServerDate());
+        $expectedDate = new \DateTime('2025-03-11T12:00:00+00:00');
+        self::assertSame($expectedDate->getTimestamp(), $response->getServerDate()->getTimestamp());
 
         self::assertSame('TestProvider', $response->getApplicationProvider());
         self::assertSame(Mode::Test, $response->getMode());
