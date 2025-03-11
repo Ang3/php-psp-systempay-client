@@ -1,7 +1,6 @@
 PHP Systempay PSP Client
 ========================
 
-[![Code Quality](https://github.com/ang3/php-psp-systempay-client/actions/workflows/php_lint.yml/badge.svg)](https://github.com/ang3/php-psp-systempay-client/actions/workflows/php_lint.yml)
 [![PHPUnit tests](https://github.com/ang3/php-psp-systempay-client/actions/workflows/phpunit.yml/badge.svg)](https://github.com/ang3/php-psp-systempay-client/actions/workflows/phpunit.yml)
 [![Latest Stable Version](https://poser.pugx.org/ang3/php-psp-systempay-client/v/stable)](https://packagist.org/packages/ang3/php-psp-systempay-client) 
 [![Latest Unstable Version](https://poser.pugx.org/ang3/php-psp-systempay-client/v/unstable)](https://packagist.org/packages/ang3/php-psp-systempay-client) 
