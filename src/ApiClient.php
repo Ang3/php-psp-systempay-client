@@ -14,7 +14,6 @@ namespace Ang3\Component\PSP\Systempay;
 use Ang3\Component\PSP\Systempay\Enum\ApiEndpoint;
 use Ang3\Component\PSP\Systempay\Exception\InvalidPayloadException;
 use Ang3\Component\PSP\Systempay\Exception\InvalidResponseException;
-use Ang3\Component\PSP\Systempay\Utils\Payload;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -88,10 +87,8 @@ class ApiClient
             'auth_basic' => [$this->credentials->getUsername(), $this->credentials->getApiKey()],
         ]));
 
-        $payload = new Payload($response->toArray());
-
         try {
-            return new ApiResponse($payload);
+            return new ApiResponse($response->toArray());
         } catch (\Throwable $exception) {
             throw new InvalidResponseException('Invalid response payload.', 0, $exception);
         }

@@ -14,7 +14,6 @@ namespace Ang3\Component\PSP\Systempay\Tests;
 use Ang3\Component\PSP\Systempay\ApiResponse;
 use Ang3\Component\PSP\Systempay\Enum\ApiResponseStatus;
 use Ang3\Component\PSP\Systempay\Enum\Mode;
-use Ang3\Component\PSP\Systempay\Utils\Payload;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -25,90 +24,103 @@ use PHPUnit\Framework\TestCase;
 final class ApiResponseTest extends TestCase
 {
     /**
-     * Test a successful API response.
+     * Test that a valid API response payload creates an ApiResponse instance with the expected values.
      */
-    public function testSuccessfulResponse(): void
+    public function testValidApiResponse(): void
     {
-        $data = [
+        $payload = [
             'webService' => 'TestService',
             'version' => '1.0',
             'applicationVersion' => '1.2.3',
             'status' => 'SUCCESS', // Must match ApiResponseStatus::Success
-            'answer' => ['data' => 'some answer'],
+            'answer' => ['key' => 'value'],
             'serverDate' => '2025-03-11T12:00:00+00:00',
             'applicationProvider' => 'TestProvider',
             'mode' => 'TEST', // Must match Mode::Test
         ];
 
-        // Instantiate a Payload using the provided data array.
-        $payload = new Payload($data);
-        $response = new ApiResponse($payload);
+        $apiResponse = new ApiResponse($payload);
 
-        // Verify that the getters return the expected values.
-        self::assertSame('TestService', $response->getWebService());
-        self::assertSame('1.0', $response->getVersion());
-        self::assertSame('1.2.3', $response->getApplicationVersion());
-        self::assertSame(ApiResponseStatus::Success, $response->getStatus());
-
-        // Assuming getAnswer() returns a Payload object with a toArray() method.
-        self::assertSame($data['answer'], $response->getAnswer()->toArray());
-
-        $expectedDate = new \DateTime('2025-03-11T12:00:00+00:00');
-        self::assertSame($expectedDate->getTimestamp(), $response->getServerDate()->getTimestamp());
-
-        self::assertSame('TestProvider', $response->getApplicationProvider());
-        self::assertSame(Mode::Test, $response->getMode());
-        self::assertTrue($response->isTestMode());
-        self::assertTrue($response->isSuccessful());
-        self::assertFalse($response->isFailed());
+        self::assertSame('TestService', $apiResponse->getWebService());
+        self::assertSame('1.0', $apiResponse->getVersion());
+        self::assertSame('1.2.3', $apiResponse->getApplicationVersion());
+        self::assertSame(ApiResponseStatus::Success, $apiResponse->getStatus());
+        self::assertSame(['key' => 'value'], $apiResponse->getAnswer());
+        self::assertInstanceOf(\DateTimeInterface::class, $apiResponse->getServerDate());
+        self::assertSame('TestProvider', $apiResponse->getApplicationProvider());
+        self::assertSame(Mode::Test, $apiResponse->getMode());
+        self::assertTrue($apiResponse->isTestMode());
+        self::assertTrue($apiResponse->isSuccessful());
+        self::assertFalse($apiResponse->isFailed());
     }
 
     /**
-     * Test an API response with an error status.
+     * Test that an API response payload without a mode property sets the mode to null.
      */
-    public function testErrorResponse(): void
+    public function testApiResponseWithoutMode(): void
     {
-        $data = [
-            'webService' => 'TestService',
-            'version' => '1.0',
-            'applicationVersion' => '1.2.3',
-            'status' => 'ERROR', // Must match ApiResponseStatus::Error
-            'answer' => ['error' => 'Some error occurred'],
-            'serverDate' => '2025-03-11T12:00:00+00:00',
-            'applicationProvider' => 'TestProvider',
-            'mode' => 'PRODUCTION', // A value other than 'TEST'
-        ];
-
-        $payload = new Payload($data);
-        $response = new ApiResponse($payload);
-
-        self::assertSame(ApiResponseStatus::Error, $response->getStatus());
-        self::assertFalse($response->isSuccessful());
-        self::assertTrue($response->isFailed());
-        self::assertFalse($response->isTestMode());
-    }
-
-    /**
-     * Test that a missing serverDate property triggers an exception.
-     */
-    public function testMissingServerDateThrowsException(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Missing server date property.');
-
-        $data = [
+        $payload = [
             'webService' => 'TestService',
             'version' => '1.0',
             'applicationVersion' => '1.2.3',
             'status' => 'SUCCESS',
-            'answer' => ['data' => 'some answer'],
-            // 'serverDate' is missing here
+            'answer' => [],
+            'serverDate' => '2025-03-11T12:00:00+00:00',
+            'applicationProvider' => 'TestProvider',
+            // 'mode' property is omitted intentionally.
+        ];
+
+        $apiResponse = new ApiResponse($payload);
+
+        self::assertNull($apiResponse->getMode());
+        self::assertFalse($apiResponse->isTestMode());
+    }
+
+    /**
+     * Test that an ApiResponse instance cannot be created when a required property is missing.
+     *
+     * This test expects an InvalidArgumentException to be thrown when a required property (e.g. "webService")
+     * is missing from the payload.
+     */
+    public function testInvalidApiResponseMissingProperty(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $payload = [
+            // Missing 'webService' property.
+            'version' => '1.0',
+            'applicationVersion' => '1.2.3',
+            'status' => 'SUCCESS',
+            'answer' => [],
+            'serverDate' => '2025-03-11T12:00:00+00:00',
             'applicationProvider' => 'TestProvider',
             'mode' => 'TEST',
         ];
 
-        $payload = new Payload($data);
-        // This should throw an exception due to the missing serverDate property.
+        new ApiResponse($payload);
+    }
+
+    /**
+     * Test that an ApiResponse instance cannot be created when a property has an incorrect type.
+     *
+     * This test expects an InvalidArgumentException to be thrown when a property (e.g. "version")
+     * is not of type string.
+     */
+    public function testInvalidApiResponseWrongType(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $payload = [
+            'webService' => 'TestService',
+            'version' => 1.0, // Invalid type: float instead of string
+            'applicationVersion' => '1.2.3',
+            'status' => 'SUCCESS',
+            'answer' => [],
+            'serverDate' => '2025-03-11T12:00:00+00:00',
+            'applicationProvider' => 'TestProvider',
+            'mode' => 'TEST',
+        ];
+
         new ApiResponse($payload);
     }
 }

@@ -32,19 +32,21 @@ final class ApiClientTest extends TestCase
 
     protected function setUp(): void
     {
-        // Initialize credentials (using demo credentials for testing).
+        // Initialize credentials (using demo credentials for testing)
         $this->credentials = Credentials::demo();
-        // Instantiate ApiClient with a NullLogger.
         $this->apiClient = new ApiClient($this->credentials, new NullLogger());
     }
 
     /**
      * Test that a valid IPN payload is validated successfully.
+     *
+     * This test verifies that the validatePayload() method returns true
+     * when a properly structured IPN payload is provided.
      */
     public function testValidatePayloadValid(): void
     {
         $krAnswer = 'test/answer';
-        // Compute the expected hash using the HMAC key from credentials.
+        // Compute the expected hash using the HMAC key from the credentials
         $expectedHash = hash_hmac('sha256', $krAnswer, $this->credentials->getHmacKey());
 
         $payload = [
@@ -54,16 +56,20 @@ final class ApiClientTest extends TestCase
             'kr-hash' => $expectedHash,
         ];
 
-        self::assertTrue($this->apiClient->validatePayload($payload));
+        $result = $this->apiClient->validatePayload($payload);
+        self::assertTrue($result, 'The IPN payload should be valid.');
     }
 
     /**
      * Test that an invalid IPN payload triggers an exception.
+     *
+     * This test ensures that the validatePayload() method throws an exception
+     * when the payload is invalid (e.g., missing required fields or incorrect hash).
      */
     public function testValidatePayloadInvalid(): void
     {
         $payload = [
-            // Missing the "kr-hash-algorithm" field.
+            // 'kr-hash-algorithm' field is missing and incorrect hash is provided
             'kr-answer' => 'test/answer',
             'kr-hash-key' => 'sha256_hmac',
             'kr-hash' => 'invalidhash',
@@ -74,48 +80,49 @@ final class ApiClientTest extends TestCase
     }
 
     /**
-     * Test that a valid API request returns an ApiResponse.
+     * Test that the request() method returns an ApiResponse object.
      *
-     * This test uses a MockHttpClient to simulate a successful response from Systempay.
+     * This test simulates an HTTP response using a mock HTTP client and verifies that
+     * the request() method returns an instance of ApiResponse with the expected data.
      */
     public function testRequestReturnsApiResponse(): void
     {
-        // Prepare a valid response payload as expected by the ApiResponse constructor.
+        // Prepare simulated response data as expected by the ApiResponse constructor
         $responseData = [
             'webService' => 'TestService',
             'version' => '1.0',
             'applicationVersion' => '1.2.3',
-            'status' => 'SUCCESS', // Must correspond to the expected enum value.
-            'answer' => ['data' => 'some answer'],
+            'status' => 'SUCCESS', // Expected value; must correspond to the appropriate enum value
+            'answer' => ['data' => 'test response'],
             'serverDate' => '2025-03-11T12:00:00+00:00',
             'applicationProvider' => 'TestProvider',
             'mode' => 'TEST',
         ];
 
-        // Create a MockResponse that returns the above JSON-encoded payload.
+        // Create a MockResponse that returns the simulated JSON-encoded response data
         $mockResponse = new MockResponse(json_encode($responseData));
-        // Create a MockHttpClient that will return our mock response.
+        // Create a MockHttpClient with the base URI of the API
         $mockHttpClient = new MockHttpClient($mockResponse, ApiClient::BASE_API_URL);
 
-        // Replace the ApiClient's private httpClient property with our MockHttpClient.
+        // Use Reflection to replace the private httpClient property with the mock HTTP client
         $reflection = new \ReflectionClass($this->apiClient);
         $property = $reflection->getProperty('httpClient');
         $property->setValue($this->apiClient, $mockHttpClient);
 
-        // Define an endpoint and dummy payload (the payload is used in the request, but the response is mocked).
+        // Define an endpoint and dummy payload (payload content is not used here as the response is mocked)
         $endpoint = 'payment';
         $requestPayload = ['dummy' => 'data'];
 
-        // Execute the request.
+        // Execute the API request
         $apiResponse = $this->apiClient->request($endpoint, $requestPayload);
 
-        // Validate that the response is an instance of ApiResponse and has expected properties.
+        // Validate that the response is an instance of ApiResponse and contains the expected properties
         self::assertInstanceOf(ApiResponse::class, $apiResponse);
         self::assertSame('TestService', $apiResponse->getWebService());
         self::assertSame('1.0', $apiResponse->getVersion());
         self::assertSame('1.2.3', $apiResponse->getApplicationVersion());
         self::assertSame('TestProvider', $apiResponse->getApplicationProvider());
-        // If getMode() returns an enum, compare its value.
+        // If getMode() returns an enum, verify its value
         self::assertSame('TEST', $apiResponse->getMode()?->value);
     }
 }
